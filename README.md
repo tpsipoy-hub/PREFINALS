@@ -1,105 +1,128 @@
-DISPATCH DECISION ENGINE DOCUMENTATION
-Introduction
-The Dispatch Decision Engine is a C++ program that adapts Episode 1 of Dispatch into a text based visual novel. The program follows Robert Robertson as he transitions from frontline superhero to dispatcher. The narrative is divided into five decision points, each implemented as a separate function. User input determines the flow of the story, updates global variables, and influences the customized epilogue.
-bool isMerciful = false;            // Tracks Robert's moral path
-int Blazer_Impression_Score = 0;    // Blonde Blazer’s perception of Robert
-bool isRomanticTensionActive = false; // Romance route flag
-int Tactical_Efficiency = 0;        // Tracks tactical success
-bool gameOver = false;              // Ends story if Robert fails
+#include <iostream>
+#include <string>
+using namespace std;
 
-Functions and Code Snippets
-1. Scene 1 — Apartment Interrogation
-void scene_interrogation() {
-    int c = get_choice("Robert must decide:",
-                       "Pull him back",
-                       "Let him drop");
-    if (c == 1) {
-        isMerciful = true;
-    } else {
-        isMerciful = false;
-    }
+// Global variables
+bool isMerciful = false;
+int Blazer_Impression_Score = 0;
+bool isRomanticTensionActive = false;
+int Tactical_Efficiency = 0;
+bool gameOver = false;
+
+// Utility functions
+void divider() {
+    cout << "\n-----------------------------\n";
 }
-Decision Path:
-•	Pull Him Back → Robert shows compassion (isMerciful = true).
-•	Let Him Drop → Robert shows ruthless efficiency (isMerciful = false).
 
-2. Scene 2 — Street Fight
+int get_choice(string prompt, string option1, string option2) {
+    int choice;
+    cout << prompt << "\n";
+    cout << "1. " << option1 << "\n";
+    cout << "2. " << option2 << "\n";
+    cout << "Enter choice (1 or 2): ";
+    cin >> choice;
+    return choice;
+}
+
+// Scene 1: Apartment Interrogation
+void scene_interrogation() {
+    divider();
+    cout << "Scene 1: Apartment Interrogation\n";
+    int c = get_choice("Robert must decide:", "Pull him back", "Let him drop");
+    isMerciful = (c == 1);
+}
+
+// Scene 2: Street Fight
 void scene_street_fight() {
-    int c = get_choice("Robert must act:",
-                       "Right hand punch",
-                       "Left hand punch");
+    divider();
+    cout << "Scene 2: Street Fight\n";
+    int c = get_choice("Robert must act:", "Right hand punch", "Left hand punch");
     if (c == 1) {
+        cout << "Robert is countered and struck. Game over.\n";
         gameOver = true;
     } else {
+        cout << "Robert knocks out the attacker.\n";
         Tactical_Efficiency += 2;
     }
 }
 
-Decision Path:
-•	Right Hand Punch → Failure, sets gameOver = true.
-•	Left Hand Punch → Success, increases Tactical_Efficiency.
-3. Scene 3 — Superhero Bar Scene
-
+// Scene 3: Superhero Bar Scene
 void scene_bar_flambae() {
-    int c = get_choice("Robert must choose:",
-                       "Throw water",
-                       "Throw alcohol");
+    divider();
+    cout << "Scene 3: Superhero Bar Scene\n";
+    int c = get_choice("Robert must choose:", "Throw water", "Throw alcohol");
     if (c == 1) {
+        cout << "Flames extinguished. Blonde Blazer nods.\n";
         Blazer_Impression_Score += 1;
     } else {
+        cout << "Flambae explodes in fire. Blonde Blazer is impressed.\n";
         Blazer_Impression_Score += 3;
     }
 }
-Decision Path:
-•	Throw Water → Subdued outcome, small impression gain.
-•	Throw Alcohol → Chaotic spectacle, stronger impression remembered by Blonde Blazer.
-4. Scene 4 — Billboard Romance
+
+// Scene 4: Billboard Romance
 void scene_billboard() {
-    int c = get_choice("Robert must decide:",
-                       "Choose to kiss",
-                       "Let the moment pass");
+    divider();
+    cout << "Scene 4: Billboard Romance\n";
+    int c = get_choice("Robert must decide:", "Choose to kiss", "Let the moment pass");
+    isRomanticTensionActive = true;
     if (c == 1) {
-        isRomanticTensionActive = true;
+        cout << "They kiss. The city fades behind them.\n";
         Blazer_Impression_Score += 2;
     } else {
-        isRomanticTensionActive = true;
+        cout << "The moment passes. Tension remains.\n";
         Blazer_Impression_Score += 1;
     }
 }
-Decision Path:
-•	Kiss → Romance route unlocked, stronger impression.
-•	Let Moment Pass → Romance tension remains, smaller impression.
 
-
-
-
-
-
-5. Scene 5 — Combat vs Toxic
+// Scene 5: Combat vs Toxic
 void scene_combat_toxic() {
-    int c = get_choice("Robert must choose:",
-                       "Punt",
-                       "Stomp");
+    divider();
+    cout << "Scene 5: Combat vs Toxic\n";
+    cout << "Toxic: \"This is a limited time offer dud.\"\n";
+    int c = get_choice("Choose your response:", "[IGNORE HIM]", "Bullshit.");
     if (c == 1) {
+        cout << "Robert ignores the bluff. Tactical restraint.\n";
         Tactical_Efficiency += (isMerciful ? 2 : 1);
     } else {
+        cout << "Robert calls the bluff. Toxic is stomped.\n";
         Tactical_Efficiency += (isMerciful ? 1 : 2);
     }
 }
 
-Decision Path:
-•	Punt → Flashy, creative, comic relief. Efficiency bonus if merciful.
-•	Stomp → Brutal efficiency, intimidation. Efficiency bonus if ruthless.
-Epilogue — Summary
-
+// Epilogue Summary
 void epilogue_summary() {
+    divider();
+    cout << "Epilogue Summary\n";
     if (isMerciful) {
-        cout << "Robert is remembered for compassionate leadership.";
+        cout << "Robert is remembered for compassionate leadership.\n";
     } else {
-        cout << "Robert is remembered for pragmatic efficiency.";
+        cout << "Robert is remembered for pragmatic efficiency.\n";
     }
+
+    if (Blazer_Impression_Score >= 4) {
+        cout << "Blonde Blazer recalls Robert’s spectacle.\n";
+    } else {
+        cout << "Blonde Blazer recalls Robert’s restraint.\n";
+    }
+
+    if (isRomanticTensionActive) {
+        cout << "Romantic tension lingers between them.\n";
+    }
+
+    cout << "Final Tactical Efficiency: " << Tactical_Efficiency << "\n";
 }
 
-Decision Path:
-•	Epilogue integrates all variables (isMerciful, Blazer_Impression_Score, isRomanticTensionActive, Tactical_Efficiency) to produce a customized ending.
+// Main function
+int main() {
+    scene_interrogation();
+    scene_street_fight();
+    if (gameOver) return 0;
+    scene_bar_flambae();
+    scene_billboard();
+    scene_combat_toxic();
+    epilogue_summary();
+    return 0;
+}
+
 
